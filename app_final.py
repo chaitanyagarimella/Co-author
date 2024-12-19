@@ -1,13 +1,16 @@
 import os
-from langchain_community.llms import Ollama
+#from langchain_community.llms import Ollama
 from langchain_community.document_loaders import DirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.combine_documents import create_stuff_documents_chain
+#from langchain.chains.combine_documents import StuffDocumentsChain
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains import create_retrieval_chain
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
+#from langchain_huggingface import HuggingFaceEmbeddings
+from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 import streamlit as st
+from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 import time
 
@@ -16,14 +19,15 @@ load_dotenv()
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
 
-llm = Ollama(model="qwen2:7b")  # Use Ollama's qwen2:7b model
+#llm = Ollama(model="qwen2:7b")  # Use Ollama's qwen2:7b model
+llm = ChatGroq(model="llama-3.1-70b-versatile", api_key='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', max_tokens= 1280, temperature = 0.8)
 
 def vector_embedding():
     if "vectors" not in st.session_state:
-        st.session_state.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")  # Use updated HuggingFace Embeddings
+        st.session_state.embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")  # Use updated HuggingFace Embeddings
         
         # Ensure the file path is correct
-        pdf_path = "/home/genaiadmin/coauthor/Co-author/docs"
+        pdf_path = "/datadrive/aiuser/Co-Author/Co-author/docs/"
         if not os.path.isdir(pdf_path):
             st.error(f"Directory not found: {pdf_path}")
             return
